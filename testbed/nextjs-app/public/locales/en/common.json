@@ -1,0 +1,19 @@
+{
+  "title": "Welcome to Next.js",
+  "description": "Get started by editing pages/index.js",
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact"
+  },
+  "buttons": {
+    "learnMore": "Learn More",
+    "getStarted": "Get Started",
+    "readDocs": "Read Documentation"
+  },
+  "footer": {
+    "copyright": "© 2024 Next.js App. All rights reserved.",
+    "poweredBy": "Powered by Next.js"
+  }
+}

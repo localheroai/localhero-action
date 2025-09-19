@@ -1,0 +1,20 @@
+name: Test LocalHero Action
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test LocalHero Action
+        uses: ./
+        env:
+          MOCK_MODE: "true"
+        with:
+          target-locales: 'es,fr,de'
+          framework: 'auto'

@@ -1,0 +1,56 @@
+{
+  "app": {
+    "title": "React Test Application",
+    "subtitle": "Testing LocalHero translations"
+  },
+  "components": {
+    "header": {
+      "logo": "My React App",
+      "menu": {
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Logout"
+      }
+    },
+    "sidebar": {
+      "navigation": "Navigation",
+      "recent": "Recent Items",
+      "favorites": "Favorites"
+    },
+    "footer": {
+      "copyright": "© 2024 React App",
+      "version": "Version 1.0.0"
+    }
+  },
+  "pages": {
+    "home": {
+      "welcome": "Welcome back!",
+      "summary": "Here's what's happening today"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "stats": "Statistics",
+      "charts": "Analytics Charts"
+    }
+  },
+  "forms": {
+    "labels": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "buttons": {
+      "submit": "Submit",
+      "reset": "Reset",
+      "save": "Save Changes",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address",
+      "passwordMismatch": "Passwords do not match"
+    }
+  }
+}

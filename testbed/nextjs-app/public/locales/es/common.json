@@ -1,0 +1,19 @@
+{
+  "title": "Bienvenido a Next.js",
+  "description": "Empieza editando pages/index.js",
+  "navigation": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "services": "Servicios",
+    "contact": "Contacto"
+  },
+  "buttons": {
+    "learnMore": "Más información",
+    "getStarted": "Comenzar",
+    "readDocs": "Leer documentación"
+  },
+  "footer": {
+    "copyright": "© 2024 Next.js App. Todos los derechos reservados.",
+    "poweredBy": "Desarrollado con Next.js"
+  }
+}

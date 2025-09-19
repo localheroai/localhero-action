@@ -1,0 +1,24 @@
+{
+  "features": {
+    "title": "Amazing Features",
+    "subtitle": "Everything you need to build great apps",
+    "items": {
+      "fast": {
+        "title": "Lightning Fast",
+        "description": "Optimized for speed and performance"
+      },
+      "secure": {
+        "title": "Secure by Default",
+        "description": "Built with security best practices"
+      },
+      "scalable": {
+        "title": "Highly Scalable",
+        "description": "Grows with your business needs"
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to get started?",
+    "button": "Start your free trial"
+  }
+}

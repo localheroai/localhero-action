@@ -1,0 +1,22 @@
+{
+  "generic": {
+    "app": {
+      "name": "Generic Application",
+      "version": "1.0.0"
+    },
+    "messages": {
+      "welcome": "Welcome to our application",
+      "goodbye": "Thank you for using our app",
+      "loading": "Loading, please wait...",
+      "error": "Something went wrong"
+    },
+    "actions": {
+      "create": "Create",
+      "read": "View",
+      "update": "Update", 
+      "delete": "Delete",
+      "search": "Search",
+      "filter": "Filter"
+    }
+  }
+}

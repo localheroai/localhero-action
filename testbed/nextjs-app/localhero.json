@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "nextjs-app",
+  "sourceLocale": "en",
+  "outputLocales": [
+  "es",
+  "fr"
+],
+  "translationFiles": {
+    "paths": [
+      "public/locales/**/"
+    ],
+    "pattern": "*.json",
+    "ignore": []
+  },
+  "lastSyncedAt": "2025-09-19T18:34:16.3NZ"
+}

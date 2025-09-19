@@ -1,0 +1,136 @@
+name: 'LocalHero AI Translation (Beta)'
+description: 'Beta: Trial access to LocalHero.ai AI-powered translation services. Zero setup, professional translations in any GitHub workflow.'
+author: 'LocalHero.ai'
+branding:
+  icon: 'globe'
+  color: 'green'
+
+inputs:
+  api_key:
+    description: 'LocalHero API key. Leave empty to create instant trial (recommended).'
+    required: false
+  target_locales:
+    description: 'Comma-separated target languages (e.g., "es,fr,de,ja"). Defaults based on detected framework.'
+    required: false
+    default: 'es,fr,de'
+  file_pattern:
+    description: 'Glob pattern for translation files. Auto-detected if not specified.'
+    required: false
+  file_format:
+    description: 'Translation file format: json, yaml, or auto (default: auto)'
+    required: false
+    default: 'auto'
+  source_locale:
+    description: 'Source language code'
+    required: false
+    default: 'en'
+  framework:
+    description: 'Framework preset: rails, nextjs, react, or auto (default: auto)'
+    required: false
+    default: 'auto'
+  skip_labels:
+    description: 'Comma-separated PR labels that skip translation (default: "skip-translation,no-translate,wip")'
+    required: false
+    default: 'skip-translation,no-translate,wip'
+  create_config:
+    description: 'Create localhero.json config file if missing (default: true)'
+    required: false
+    default: 'true'
+  config_commit_message:
+    description: 'Commit message for localhero.json creation'
+    required: false
+    default: 'Add LocalHero translation configuration'
+
+outputs:
+  api_key:
+    description: 'The API key used (masked in logs)'
+  organization_id:
+    description: 'LocalHero organization ID'
+  project_id:
+    description: 'LocalHero project ID'
+  is_new_user:
+    description: 'Whether this created a new trial user'
+  trial_days_remaining:
+    description: 'Days remaining in trial (if applicable)'
+  config_created:
+    description: 'Whether localhero.json was created'
+  translations_processed:
+    description: 'Number of translations processed'
+  skip_reason:
+    description: 'Reason translation was skipped (if applicable)'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Check for skip labels'
+      id: 'check_skip'
+      shell: bash
+      run: ${{ github.action_path }}/scripts/check-skip-labels.sh
+      env:
+        SKIP_LABELS: ${{ inputs.skip_labels }}
+    - name: 'Setup LocalHero environment'
+      id: 'setup'
+      if: steps.check_skip.outputs.skip != 'true'
+      shell: bash
+      run: ${{ github.action_path }}/scripts/setup.sh
+      env:
+        INPUT_API_KEY: ${{ inputs.api_key }}
+        INPUT_TARGET_LOCALES: ${{ inputs.target_locales }}
+        INPUT_FILE_PATTERN: ${{ inputs.file_pattern }}
+        INPUT_FILE_FORMAT: ${{ inputs.file_format }}
+        INPUT_SOURCE_LOCALE: ${{ inputs.source_locale }}
+        INPUT_FRAMEWORK: ${{ inputs.framework }}
+        INPUT_CREATE_CONFIG: ${{ inputs.create_config }}
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        LOCALHERO_API_HOST: ${{ env.LOCALHERO_API_HOST }}
+    - name: 'Detect framework and generate config'
+      id: 'detect'
+      if: steps.check_skip.outputs.skip != 'true'
+      shell: bash
+      run: ${{ github.action_path }}/scripts/detect-framework.sh
+      env:
+        INPUT_FRAMEWORK: ${{ inputs.framework }}
+        INPUT_FILE_PATTERN: ${{ inputs.file_pattern }}
+        INPUT_FILE_FORMAT: ${{ inputs.file_format }}
+        INPUT_SOURCE_LOCALE: ${{ inputs.source_locale }}
+        INPUT_TARGET_LOCALES: ${{ inputs.target_locales }}
+        INPUT_CREATE_CONFIG: ${{ inputs.create_config }}
+    - name: 'Setup Node.js'
+      if: steps.check_skip.outputs.skip != 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: 'Run translations'
+      id: 'translate'
+      if: steps.check_skip.outputs.skip != 'true'
+      shell: bash
+      run: ${{ github.action_path }}/scripts/run-translations.sh
+      env:
+        LOCALHERO_API_KEY: ${{ steps.setup.outputs.api_key }}
+        LOCALHERO_PROJECT_ID: ${{ steps.detect.outputs.project_id }}
+    - name: 'Commit config file'
+      if: steps.check_skip.outputs.skip != 'true' && steps.detect.outputs.config_created == 'true'
+      shell: bash
+      run: |
+        if [ -f "localhero.json" ]; then
+          echo "📝 Committing generated localhero.json..."
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add localhero.json
+          git commit -m "${{ inputs.config_commit_message }}" || echo "No changes to commit"
+        fi
+    - name: 'Output summary'
+      if: always()
+      shell: bash
+      run: ${{ github.action_path }}/scripts/output-summary.sh
+      env:
+        SKIP_REASON: ${{ steps.check_skip.outputs.skip_reason }}
+        API_KEY: ${{ steps.setup.outputs.api_key }}
+        ORGANIZATION_ID: ${{ steps.setup.outputs.organization_id }}
+        PROJECT_ID: ${{ steps.setup.outputs.project_id }}
+        IS_NEW_USER: ${{ steps.setup.outputs.is_new_user }}
+        TRIAL_DAYS_REMAINING: ${{ steps.setup.outputs.trial_days_remaining }}
+        CONFIG_CREATED: ${{ steps.detect.outputs.config_created }}
+        TRANSLATIONS_PROCESSED: ${{ steps.translate.outputs.translations_processed }}

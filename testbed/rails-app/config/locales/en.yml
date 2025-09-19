@@ -1,0 +1,19 @@
+en:
+  hello: "Hello world"
+  welcome: "Welcome to our application"
+  navigation:
+    home: "Home"
+    about: "About"
+    contact: "Contact Us"
+  buttons:
+    submit: "Submit"
+    cancel: "Cancel"
+    save: "Save Changes"
+  messages:
+    success: "Operation completed successfully"
+    error: "An error occurred"
+    confirm: "Are you sure?"
+  user:
+    profile: "User Profile"
+    settings: "Account Settings"
+    logout: "Sign Out"

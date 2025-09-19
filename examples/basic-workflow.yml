@@ -1,0 +1,21 @@
+name: Translate with LocalHero
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Translate with LocalHero
+        uses: localheroai/localhero-action@v0.1-beta
+        with:
+          target-locales: 'es,fr,de'
+          framework: 'auto'

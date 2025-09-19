@@ -1,0 +1,24 @@
+{
+  "features": {
+    "title": "Funciones increíbles",
+    "subtitle": "Todo lo que necesitas para crear aplicaciones excepcionales",
+    "items": {
+      "fast": {
+        "title": "Ultra rápido",
+        "description": "Optimizado para velocidad y rendimiento"
+      },
+      "secure": {
+        "title": "Seguro por defecto",
+        "description": "Construido siguiendo las mejores prácticas de seguridad"
+      },
+      "scalable": {
+        "title": "Altamente escalable",
+        "description": "Crece junto con las necesidades de tu negocio"
+      }
+    }
+  },
+  "cta": {
+    "title": "¿Listo para empezar?",
+    "button": "Comienza tu prueba gratuita"
+  }
+}
