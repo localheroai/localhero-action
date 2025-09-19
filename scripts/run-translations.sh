@@ -3,6 +3,12 @@ set -e
 
 echo "🌍 Running LocalHero translations..."
 
+if [ "$MOCK_MODE" = "true" ]; then
+  echo "🎭 Running in mock mode - skipping actual translations"
+  echo "translations_processed=1" >> $GITHUB_OUTPUT
+  exit 0
+fi
+
 if [ -z "$LOCALHERO_API_KEY" ]; then
   echo "❌ No API key available"
   echo "translations_processed=0" >> $GITHUB_OUTPUT
