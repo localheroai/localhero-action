@@ -1,0 +1,130 @@
+name: 'LocalHero AI Translation'
+description: 'Automatic AI-powered translations for your i18n files using Localhero.ai.'
+author: 'Localhero.ai'
+branding:
+  icon: 'globe'
+  color: 'purple'
+
+inputs:
+  api-key:
+    description: 'LocalHero API key. Get yours at https://localhero.ai/api-keys'
+    required: false
+  command:
+    description: 'CLI command to run: ci, translate, push, or pull'
+    required: false
+    default: 'ci'
+  verbose:
+    description: 'Show detailed output'
+    required: false
+    default: 'false'
+  cli-version:
+    description: 'CLI version to use (e.g., "1.2.3" or "latest")'
+    required: false
+    default: 'latest'
+  skip-labels:
+    description: 'Comma-separated PR labels that skip translation'
+    required: false
+    default: 'skip-translation'
+
+outputs:
+  skipped:
+    description: 'Whether translation was skipped'
+    value: ${{ steps.skip-check.outputs.skipped }}
+  skip-reason:
+    description: 'Reason for skipping (if applicable)'
+    value: ${{ steps.skip-check.outputs.skip-reason }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Check skip conditions
+      id: skip-check
+      shell: bash
+      env:
+        SKIP_LABELS: ${{ inputs.skip-labels }}
+        PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        PR_DRAFT: ${{ github.event.pull_request.draft }}
+        ACTOR: ${{ github.actor }}
+        EVENT_ACTION: ${{ github.event.action }}
+      run: |
+        skip_with_reason() {
+          echo "skipped=true" >> $GITHUB_OUTPUT
+          echo "skip-reason=$1" >> $GITHUB_OUTPUT
+          echo "::notice::Skipping translation: $1"
+          exit 0
+        }
+
+        # Check for skip labels
+        IFS=',' read -ra LABELS <<< "$SKIP_LABELS"
+        for label in "${LABELS[@]}"; do
+          label=$(echo "$label" | xargs)
+          if [[ -n "$label" && ",$PR_LABELS," == *",$label,"* ]]; then
+            skip_with_reason "PR has '$label' label"
+          fi
+        done
+
+        # Check for draft PR
+        [[ "$PR_DRAFT" == "true" ]] && skip_with_reason "PR is a draft"
+
+        # Check for bot sync (avoid infinite loop)
+        [[ "$ACTOR" == "localhero-ai[bot]" && "$EVENT_ACTION" == "synchronize" ]] && skip_with_reason "Skipping bot auto-sync"
+
+        echo "skipped=false" >> $GITHUB_OUTPUT
+        echo "skip-reason=" >> $GITHUB_OUTPUT
+
+    - name: Validate API key
+      if: steps.skip-check.outputs.skipped != 'true' && inputs.api-key == ''
+      shell: bash
+      run: |
+        echo "::error::api-key is required. Get your API key at https://localhero.ai/api-keys"
+        exit 1
+
+    - name: Fetch base branch for comparison
+      if: steps.skip-check.outputs.skipped != 'true' && github.event_name == 'pull_request'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        BASE_REF: ${{ github.base_ref }}
+        REPO: ${{ github.repository }}
+      run: |
+        git fetch --no-tags --depth=1 \
+          "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPO}" \
+          "${BASE_REF}:${BASE_REF}"
+
+    - name: Setup Node.js
+      if: steps.skip-check.outputs.skipped != 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Run LocalHero CLI
+      if: steps.skip-check.outputs.skipped != 'true'
+      shell: bash
+      env:
+        LOCALHERO_API_KEY: ${{ inputs.api-key }}
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_BASE_REF: ${{ github.base_ref }}
+        INPUT_COMMAND: ${{ inputs.command }}
+        INPUT_CLI_VERSION: ${{ inputs.cli-version }}
+        INPUT_VERBOSE: ${{ inputs.verbose }}
+      run: |
+        # Validate command
+        case "$INPUT_COMMAND" in
+          ci|translate|push|pull) ;;
+          *) echo "::error::Invalid command '$INPUT_COMMAND'. Allowed: ci, translate, push, pull"; exit 1 ;;
+        esac
+
+        # Validate cli-version format
+        if [[ ! "$INPUT_CLI_VERSION" =~ ^[a-zA-Z0-9.\-]+$ ]]; then
+          echo "::error::Invalid cli-version format. Use 'latest' or a version like '1.2.3'"
+          exit 1
+        fi
+
+        # Build package reference and arguments
+        PKG="@localheroai/cli"
+        [[ "$INPUT_CLI_VERSION" != "latest" ]] && PKG+="@$INPUT_CLI_VERSION"
+        ARGS=("$INPUT_COMMAND")
+        [[ "$INPUT_VERBOSE" == "true" ]] && ARGS+=("--verbose")
+
+        echo "Running: npx -y $PKG ${ARGS[*]}"
+        npx -y "$PKG" "${ARGS[@]}"
