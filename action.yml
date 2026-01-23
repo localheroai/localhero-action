@@ -87,7 +87,7 @@ runs:
         BASE_REF: ${{ github.base_ref }}
         REPO: ${{ github.repository }}
       run: |
-        git fetch --no-tags --depth=1 \
+        git fetch --no-tags --depth=20 \
           "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPO}" \
           "${BASE_REF}:${BASE_REF}"
 
