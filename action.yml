@@ -9,6 +9,9 @@ inputs:
   api-key:
     description: 'LocalHero API key. Get yours at https://localhero.ai/api-keys'
     required: false
+  api-host:
+    description: 'LocalHero API host (defaults to https://localhero.ai)'
+    required: false
   command:
     description: 'CLI command to run: ci, translate, push, or pull'
     required: false
@@ -102,12 +105,16 @@ runs:
       shell: bash
       env:
         LOCALHERO_API_KEY: ${{ inputs.api-key }}
+        INPUT_API_HOST: ${{ inputs.api-host }}
         GITHUB_TOKEN: ${{ github.token }}
         GITHUB_BASE_REF: ${{ github.base_ref }}
         INPUT_COMMAND: ${{ inputs.command }}
         INPUT_CLI_VERSION: ${{ inputs.cli-version }}
         INPUT_VERBOSE: ${{ inputs.verbose }}
       run: |
+        # Set API host only if provided
+        [[ -n "$INPUT_API_HOST" ]] && export LOCALHERO_API_HOST="$INPUT_API_HOST"
+
         # Validate command
         case "$INPUT_COMMAND" in
           ci|translate|push|pull) ;;
