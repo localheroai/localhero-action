@@ -48,7 +48,6 @@ runs:
         PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         PR_DRAFT: ${{ github.event.pull_request.draft }}
         ACTOR: ${{ github.actor }}
-        EVENT_ACTION: ${{ github.event.action }}
       run: |
         skip_with_reason() {
           echo "skipped=true" >> $GITHUB_OUTPUT
@@ -69,8 +68,17 @@ runs:
         # Check for draft PR
         [[ "$PR_DRAFT" == "true" ]] && skip_with_reason "PR is a draft"
 
-        # Check for bot sync (avoid infinite loop)
-        [[ "$ACTOR" == "localhero-ai[bot]" && "$EVENT_ACTION" == "synchronize" ]] && skip_with_reason "Skipping bot auto-sync"
+        # Check for bot commit without sync trigger (avoid infinite loop)
+        # When LocalHero web UI triggers sync, it adds syncTriggerId to localhero.json
+        # We should run in sync mode. But if bot commits without syncTriggerId,
+        # it's a translation commit and we should skip to prevent loops.
+        if [[ "$ACTOR" == "localhero-ai[bot]" ]]; then
+          SYNC_ID=$(jq -r '.syncTriggerId // empty' localhero.json 2>/dev/null || echo "")
+          if [[ -z "$SYNC_ID" ]]; then
+            skip_with_reason "Bot commit without sync trigger"
+          fi
+          echo "::notice::Sync mode: found syncTriggerId"
+        fi
 
         echo "skipped=false" >> $GITHUB_OUTPUT
         echo "skip-reason=" >> $GITHUB_OUTPUT
