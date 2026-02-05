@@ -14,6 +14,8 @@ on:
     paths:
       - "locales/**"
       - "localhero.json"
+  repository_dispatch:
+    types: [localhero-sync]
   workflow_dispatch:
 
 concurrency:
@@ -30,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.client_payload.branch || github.head_ref }}
           fetch-depth: 0
 
       - uses: localheroai/action@v1
@@ -99,7 +101,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.client_payload.branch || github.head_ref }}
           fetch-depth: 0
 
       # Extract messages (project-specific)

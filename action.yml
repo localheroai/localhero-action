@@ -48,6 +48,7 @@ runs:
         PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         PR_DRAFT: ${{ github.event.pull_request.draft }}
         ACTOR: ${{ github.actor }}
+        EVENT_NAME: ${{ github.event_name }}
       run: |
         skip_with_reason() {
           echo "skipped=true" >> $GITHUB_OUTPUT
@@ -55,6 +56,14 @@ runs:
           echo "::notice::Skipping translation: $1"
           exit 0
         }
+
+        # repository_dispatch is always a sync trigger — skip all other checks
+        if [[ "$EVENT_NAME" == "repository_dispatch" ]]; then
+          echo "::notice::Sync mode: repository_dispatch trigger"
+          echo "skipped=false" >> $GITHUB_OUTPUT
+          echo "skip-reason=" >> $GITHUB_OUTPUT
+          exit 0
+        fi
 
         # Check for skip labels
         IFS=',' read -ra LABELS <<< "$SKIP_LABELS"
@@ -101,6 +110,16 @@ runs:
         git fetch --no-tags --depth=20 \
           "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPO}" \
           "${BASE_REF}:${BASE_REF}"
+
+    - name: Handle repository_dispatch
+      if: steps.skip-check.outputs.skipped != 'true' && github.event_name == 'repository_dispatch'
+      shell: bash
+      env:
+        SYNC_ID: ${{ github.event.client_payload.sync_id }}
+        SYNC_VERSION: ${{ github.event.client_payload.sync_update_version }}
+      run: |
+        echo "LOCALHERO_SYNC_ID=$SYNC_ID" >> $GITHUB_ENV
+        echo "LOCALHERO_SYNC_VERSION=$SYNC_VERSION" >> $GITHUB_ENV
 
     - name: Setup Node.js
       if: steps.skip-check.outputs.skipped != 'true'
