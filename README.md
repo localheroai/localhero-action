@@ -35,7 +35,7 @@ jobs:
           ref: ${{ github.event.client_payload.branch || github.head_ref }}
           fetch-depth: 0
 
-      - uses: localheroai/action@v1
+      - uses: localheroai/localhero-action@v1
         with:
           api-key: ${{ secrets.LOCALHERO_API_KEY }}
 ```
@@ -81,7 +81,7 @@ That's it! The action will automatically:
 The simplest setup uses the `ci` command which auto-detects your context:
 
 ```yaml
-- uses: localheroai/action@v1
+- uses: localheroai/localhero-action@v1
   with:
     api-key: ${{ secrets.LOCALHERO_API_KEY }}
 ```
@@ -111,7 +111,7 @@ jobs:
           python manage.py concat_po_files
 
       # Run LocalHero translation
-      - uses: localheroai/action@v1
+      - uses: localheroai/localhero-action@v1
         with:
           api-key: ${{ secrets.LOCALHERO_API_KEY }}
 
@@ -131,7 +131,7 @@ The action automatically skips translation when:
 ### Custom Skip Labels
 
 ```yaml
-- uses: localheroai/action@v1
+- uses: localheroai/localhero-action@v1
   with:
     api-key: ${{ secrets.LOCALHERO_API_KEY }}
     skip-labels: 'skip-translation,wip,no-i18n'
