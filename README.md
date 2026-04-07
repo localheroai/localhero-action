@@ -19,7 +19,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: translate-${{ github.head_ref || github.run_id }}
+  group: translate-${{ github.event.client_payload.branch || github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.client_payload.branch || github.head_ref }}
+          ref: ${{ github.event.client_payload.branch || github.head_ref || github.ref_name }}
           fetch-depth: 0
 
       - uses: localheroai/localhero-action@v1
@@ -101,7 +101,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.client_payload.branch || github.head_ref }}
+          ref: ${{ github.event.client_payload.branch || github.head_ref || github.ref_name }}
           fetch-depth: 0
 
       # Extract messages (project-specific)
