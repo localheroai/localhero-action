@@ -1,8 +1,10 @@
 # LocalHero GitHub Action 🌍
 
-> Automatic localization for teams that ship
+> AI translation that runs in CI, on every pull request
 
-The official GitHub Action for [LocalHero.ai](https://localhero.ai) - AI-powered i18n translations that integrate seamlessly with your development workflow. [Start your free trial](https://localhero.ai) to get automatic translations in your PRs.
+The official GitHub Action for [LocalHero.ai](https://localhero.ai). It translates the i18n keys that changed in a PR and commits them back to the same PR, so translations stop holding up releases. It knows your glossary and brand terms, preserves ICU placeholders and plural forms, and gives your team a review UI instead of a YAML diff.
+
+Works with the common code-native i18n setups: **react-i18next**, **LinguiJS**, **Rails i18n** (YAML), and **Django / gettext** (`.po`), plus JSON and YAML locale files generally. [Start your free trial](https://localhero.ai) to get automatic translations in your PRs.
 
 ## Quick Start 🚀
 

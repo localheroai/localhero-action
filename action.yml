@@ -1,5 +1,5 @@
 name: 'LocalHero AI Translation'
-description: 'Automatic AI-powered translations for your i18n files using Localhero.ai.'
+description: 'AI i18n translation on every PR. Works with react-i18next, LinguiJS, Rails (YAML), and Django (.po).'
 author: 'Localhero.ai'
 branding:
   icon: 'globe'
