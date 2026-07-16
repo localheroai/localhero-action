@@ -130,6 +130,14 @@ The action automatically skips translation when:
 - **PR is a draft**: Draft PRs are skipped
 - **Bot auto-sync**: Prevents infinite loops from bot commits
 
+> **Note:** Marking a draft PR as ready for review doesn't re-run the workflow on its own — GitHub only triggers `pull_request` workflows on `opened`, `synchronize` and `reopened` by default, and re-running a skipped run reuses the original event where the PR was still a draft. Push a new commit after marking the PR ready, or add `ready_for_review` to your workflow triggers:
+>
+> ```yaml
+> on:
+>   pull_request:
+>     types: [opened, synchronize, reopened, ready_for_review]
+> ```
+
 ### Custom Skip Labels
 
 ```yaml
