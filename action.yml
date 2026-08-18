@@ -1,5 +1,5 @@
-name: 'LocalHero AI Translation'
-description: 'AI i18n translation on every PR. Works with react-i18next, LinguiJS, Rails (YAML), and Django (.po).'
+name: 'Localhero AI Translation'
+description: 'Translate locale files with AI on every pull request. i18n for YAML, JSON, gettext .po. Glossary and human review.'
 author: 'Localhero.ai'
 branding:
   icon: 'globe'
@@ -7,10 +7,10 @@ branding:
 
 inputs:
   api-key:
-    description: 'LocalHero API key. Get yours at https://localhero.ai/api-keys'
+    description: 'Localhero API key. Get yours at https://localhero.ai/api-keys'
     required: false
   api-host:
-    description: 'LocalHero API host (defaults to https://localhero.ai)'
+    description: 'Localhero API host (defaults to https://localhero.ai)'
     required: false
   command:
     description: 'CLI command to run: ci, translate, push, or pull'
@@ -78,7 +78,7 @@ runs:
         [[ "$PR_DRAFT" == "true" ]] && skip_with_reason "PR is a draft"
 
         # Check for bot commit without sync trigger (avoid infinite loop)
-        # When LocalHero web UI triggers sync, it adds syncTriggerId to localhero.json
+        # When Localhero web UI triggers sync, it adds syncTriggerId to localhero.json
         # We should run in sync mode. But if bot commits without syncTriggerId,
         # it's a translation commit and we should skip to prevent loops.
         if [[ "$ACTOR" == "localhero-ai[bot]" ]]; then
@@ -127,7 +127,7 @@ runs:
       with:
         node-version: '22'
 
-    - name: Run LocalHero CLI
+    - name: Run Localhero CLI
       if: steps.skip-check.outputs.skipped != 'true'
       shell: bash
       env:
