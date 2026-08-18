@@ -1,6 +1,6 @@
 # Localhero GitHub Action 🌍
 
-> AI translation that runs in CI, on every pull request
+> Translate locale files with AI in CI, on every pull request
 
 The official GitHub Action for [Localhero.ai](https://localhero.ai). It translates the i18n keys that changed in a PR and commits them back to the same PR, so translations stop holding up releases. It knows your glossary and brand terms, preserves ICU placeholders and plural forms, and gives your team a review UI instead of a YAML diff.
 
