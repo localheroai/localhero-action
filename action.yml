@@ -1,5 +1,5 @@
 name: 'Localhero AI Translation'
-description: 'Translate locale files with AI on every pull request. i18n for YAML, JSON, gettext .po. Glossary and human review.'
+description: 'Lightweight TMS that lives in your pull requests. AI-translates YAML, JSON and .po files on every PR, with glossary.'
 author: 'Localhero.ai'
 branding:
   icon: 'globe'
