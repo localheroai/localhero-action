@@ -37,6 +37,7 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.branch || github.head_ref || github.ref_name }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Translate
         uses: localheroai/localhero-action@v1
@@ -48,6 +49,8 @@ That's it! The action will automatically:
 - Fetch the base branch for comparison
 - Translate missing keys
 - Commit the changes to your PR
+
+`persist-credentials: false` makes the commit come from `localhero-ai[bot]` when the [GitHub App](https://localhero.ai/docs/github-app) is installed. Your CI then runs on that commit. Without it, git pushes with the `GITHUB_TOKEN` that checkout stored.
 
 ## Setup 🏁
 
@@ -108,6 +111,7 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.branch || github.head_ref || github.ref_name }}
           fetch-depth: 0
+          persist-credentials: false
 
       # Extract messages (project-specific)
       - name: Extract messages
