@@ -73,6 +73,7 @@ That's it! The action will automatically:
 | `verbose` | No | `false` | Show detailed output |
 | `cli-version` | No | `latest` | Pin CLI version (e.g., `1.2.3`) |
 | `skip-labels` | No | `skip-translation` | Comma-separated PR labels that skip translation |
+| `working-directory` | No | `.` | Directory holding `localhero.json`, relative to the repository root. Set this in a monorepo. |
 
 ## Outputs
 
@@ -177,3 +178,33 @@ This enables:
 ## License 📄
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+## Monorepos
+
+Each app is its own Localhero project with its own `localhero.json`, target
+languages and glossary. Point the action at the app with `working-directory`,
+and use a matrix to cover several apps in one workflow:
+
+```yaml
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      matrix:
+        app: [web, admin]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: localheroai/github-action@v1
+        with:
+          api-key: ${{ secrets.LOCALHERO_API_KEY }}
+          working-directory: apps/${{ matrix.app }}
+```
+
+Add a `paths` filter to the workflow trigger so each app only runs when its own
+locale files change.
