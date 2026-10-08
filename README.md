@@ -186,6 +186,10 @@ languages and glossary. Point the action at the app with `working-directory`,
 and use a matrix to cover several apps in one workflow:
 
 ```yaml
+concurrency:
+  group: translate-${{ github.event.client_payload.branch || github.head_ref || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   translate:
     runs-on: ubuntu-latest
@@ -196,15 +200,27 @@ jobs:
       matrix:
         app: [web, admin]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.client_payload.branch || github.head_ref || github.ref_name }}
           fetch-depth: 0
-      - uses: localheroai/github-action@v1
+          persist-credentials: false
+      - uses: localheroai/localhero-action@v1
         with:
           api-key: ${{ secrets.LOCALHERO_API_KEY }}
           working-directory: apps/${{ matrix.app }}
 ```
+
+Keep `cancel-in-progress: false` with a matrix. Each app commits its own
+translations, and that commit starts a new run; cancelling the current run would
+stop the apps that are still translating.
+
+When two apps commit at the same time, the second one replays its commit on top
+of the first (CLI 0.0.80 and later). On older CLI versions, add `max-parallel: 1`
+under `strategy` so the apps run one after another.
+
+A sync from the Localhero web app reaches every app's job. Only the app the sync
+belongs to applies it; the others print a notice and pass (CLI 0.0.79 and later).
 
 Add a `paths` filter to the workflow trigger so each app only runs when its own
 locale files change.
