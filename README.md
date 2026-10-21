@@ -147,6 +147,16 @@ The action automatically skips translation when:
     skip-labels: 'skip-translation,wip,no-i18n'
 ```
 
+### Skipping Bot Runs in Your Workflow
+
+The action already skips the bot's translation commits, so you don't need your own check. If you add one on `github.actor` anyway, let `localhero-sync-*` branches through. A sync from the Localhero web app starts from a bot commit on that branch, and skipping it leaves the PR without the translations.
+
+```yaml
+jobs:
+  translate:
+    if: github.event_name != 'pull_request' || github.actor != 'localhero-ai[bot]' || startsWith(github.head_ref, 'localhero-sync-')
+```
+
 ## Commands ⚙️
 
 | Command | Description |
